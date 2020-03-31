@@ -13,14 +13,17 @@ export default class Publish extends Component {
         super();
         this.state = {
             tits: [],
-            page: 1
+            page: 1,
+            isloading: true
         }
         this.fetchData(this.state.page);
     }
     fetchData = (page) => {
+        this.setState({ isloading: true })
         fetch('https://cnodejs.org/api/v1/topics?limit=11&page=' + page)
             .then((res) => res.json())
             .then((res) => {
+                this.setState({ isloading: false });
                 res.data.forEach(item => {
                     item.num = Math.random() > 0.5 ? '已回复' : '待回复',
                         item.title = item.title.length > 15 ? item.title.slice(0, 15) + '...' : item.title,
@@ -49,10 +52,10 @@ export default class Publish extends Component {
     render() {
         return (
             <SafeAreaView>
-                <View style={{ width: '100%', height: 50, backgroundColor: '#f23030', flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ width: '100%', height: 50, justifyContent: 'space-between', backgroundColor: '#f23030', flexDirection: 'row', alignItems: 'center' }}>
                     <Icon style={{ marginLeft: 10 }} color='#fff' name='left' onPress={() => Actions.pop()} />
                     <Text style={{ fontSize: 20, color: '#fff', marginLeft: 150, marginRight: 150 }}>我的发布</Text>
-                    <Icon color='#fff' name='ellipsis' />
+                    <Icon style={{ marginRight: 10 }} color='#fff' name='ellipsis' />
                 </View>
                 <View style={{ marginTop: 6 }}>
                     {
@@ -116,6 +119,11 @@ export default class Publish extends Component {
                         }}
                     >下一页</Button>
                 </View>
+                {
+                    this.state.isloading
+                        ? <View style={{ alignItems: 'center' }}><Text style={{ fontSize: 20,marginTop:10 }}>正在获取数据...</Text></View>
+                        : null
+                }
             </SafeAreaView>
         )
     }
